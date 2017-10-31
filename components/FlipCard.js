@@ -8,6 +8,14 @@ import {
 
 import {FlashFlexRow, FlashButton, FlashFlex} from '../styles/Styles'
 
+
+/**
+ * this component is mainly based on this github example
+ * https://github.com/browniefed/examples/blob/animated_basic/flip/animatedbasic/index.android.js
+ * thx @browniefed
+ */
+
+
 export default class FlipCard extends Component {
 
 
