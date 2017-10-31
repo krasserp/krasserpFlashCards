@@ -18,7 +18,7 @@ const Tabs = TabNavigator({
     screen:DeckList,
     navigationOptions: {
       tabBarLabel: 'Decks',
-      tabBarIcon: ({tintColor}) => <MaterialCommunityIcons name='cards-outline' size={30} color={tintColor} />
+      tabBarIcon: ({tintColor}) => <MaterialCommunityIcons name='cards' size={25} color={tintColor} />
     }
   },
 
@@ -26,7 +26,7 @@ const Tabs = TabNavigator({
     screen:NewDeck,
     navigationOptions: {
       tabBarLabel: 'New Deck',
-      tabBarIcon: ({tintColor}) => <MaterialCommunityIcons name='cards-variant' size={30} color={tintColor} />
+      tabBarIcon: ({tintColor}) => <MaterialCommunityIcons name='cards-outline' size={25} color={tintColor} />
     }
   }
 
@@ -39,8 +39,9 @@ const Tabs = TabNavigator({
 
   tabBarOptions: {
     activeTintColor: 'yellow',
+    showIcon:true,
     style:{
-      height: 50,
+      height: 70,
       backgroundColor: '#202020',
       shadowColor: 'rgba(255,255,255,0.24)',
       shadowOffset: {
