@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeckInfo, FlashText } from '../styles/Styles'
+import { FlashFlex, FlashText, FlashButton, FlashFlexRow, FlashScrollView } from '../styles/Styles'
 import { ActivityIndicator } from 'react-native'
 import * as flashDB from '../utils/storeApi'
 
@@ -7,68 +7,118 @@ class DeckView extends Component {
 
     static navigationOptions =({navigation}) => {
         const {title} = navigation.state.params
-        return {title: title}
+        return {title: 'Deck :: ' + title}
 
-    } 
+    }
 
 
     state={
-        name: null,
-        numberOfQuestions: null
+        title: null,
+        questionCount: null,
+        deck: null,
     }
 
-
-
-
-    
-
-    updateEntries(data){
+    updateEntries(data,deck){
 
         this.setState(()=>({
-            name: data.title,
-            numberOfQuestions: data.questions.length
+            title: data.title,
+            questionCount: data.questions.length,
+            deck: deck
         }))
-
-        console.warn(' do I ', this.props.navigation.state, ' com on ')
 
     }
 
 
+    goHome(){
+        this.props.navigation.navigate(
+                    'Home'
+            )
+    }
+
+
+    deleteDeck(){
+        flashDB.deleteDeck(this.state.deck)
+            .then(() => {
+                this.goHome()
+            })
+
+
+    }
+
+    takeQuiz(){
+        const { deck, title } = this.state
+
+        this.props.navigation.navigate(
+            'QuizView', {deck:deck, title:title}
+        )
+    }
+
+
+    addCard(){
+
+        const {deck, title, questionCount} = this.state
+
+        this.props.navigation.navigate(
+            'NewCard', {deck:deck, title:title}
+        )
+    }
+
     componentDidMount(){
-        console.warn(this.navigationOptions, ' nav options?')
+
         const {deck, title} = this.props.navigation.state.params
 
         flashDB.getDeck(deck)
             .then((data)=>{
-                this.updateEntries(data)
+                this.updateEntries(data, deck)
             })
     }
 
 
     render() {
 
-        const {name,numberOfQuestions} = this.state
+        const {title,questionCount} = this.state
 
 
-        if (name === null){
+        if (title === null){
             return(
-                <DeckInfo>
-                    <FlashText>Loading,...</FlashText>
-                    <ActivityIndicator />
-                </DeckInfo>
+                <FlashFlex>
+                    <FlashText>
+                        Loading,...
+                    </FlashText>
+                    <ActivityIndicator
+                        color='yellow'
+                        size='large'
+                    />
+                </FlashFlex>
             )
         }
 
 
         return(
-             <DeckInfo>
-                <FlashText>
-                    {name} 
+            <FlashScrollView>
+
+             <FlashFlex>
+                <FlashFlexRow>
+                    <FlashButton color='#404040' disabled={this.state.questionCount < 1 ? true: false}  onPress={() => {this.takeQuiz()}} title='Take Quiz' />
+                    <FlashButton color='#404040' onPress={() => {this.addCard()}} title='Add Question' />
+                </FlashFlexRow>
+
+                <FlashText style={{fontSize:25}}>
+                    {title}
                 </FlashText>
-                <FlashText>
-                    Questions:{numberOfQuestions}
+                <FlashText txtColor='grey'>
+                    {questionCount} cards
                 </FlashText>
-            </DeckInfo>
+
+
+                <FlashFlexRow>
+                    <FlashButton color='#404040' onPress={() => {this.deleteDeck()}} title='Delete Deck' />
+                    <FlashButton color='#404040' onPress={() => {this.goHome()}} title='Home' />
+                </FlashFlexRow>
+
+            </FlashFlex>
+
+            </FlashScrollView>
         )
 
     }

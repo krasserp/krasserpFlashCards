@@ -5,9 +5,12 @@ import { CenterView, FlashText, FlashScrollView } from './styles/Styles'
 import DeckList from './components/DeckList'
 import NewDeck from './components/NewDeck'
 import DeckView from './components/DeckView'
+import QuizView from './components/QuizView'
+import NewCard from './components/NewCard'
 import { FlashStatusBar } from './styles/StatusBar'
 import { TabNavigator, StackNavigator } from 'react-navigation'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { setLocalNotification } from './utils/helpers'
 
 
 const Tabs = TabNavigator({
@@ -24,7 +27,7 @@ const Tabs = TabNavigator({
     navigationOptions: {
       tabBarLabel: 'New Deck',
       tabBarIcon: ({tintColor}) => <MaterialCommunityIcons name='cards-variant' size={30} color={tintColor} />
-    }   
+    }
   }
 
 
@@ -59,24 +62,25 @@ const MainNavi = StackNavigator({
   },
   DeckView: {
     screen: DeckView,
-    headerMode: 'screen',
-    headerTintColor:'#202020',
-    headerStyle:{
-      backgroundColor: '#fff'
-    }
+  },
+
+  QuizView: {
+    screen: QuizView,
+  },
+
+  NewCard: {
+    screen: NewCard,
   }
 
 },{
 
-navigationOptions :{
-  title: 'Deck',
-  headerStyle: { backgroundColor: '#111' },
-  headerTintColor:'yellow',
-  headerTitleStyle: { color: '#fff' },
-},
+  navigationOptions :{
+    title: 'Deck',
+    headerStyle: { backgroundColor: '#111' },
+    headerTintColor:'yellow',
+    headerTitleStyle: { color: '#fff' },
+  },
 
-
-    headerMode: 'screen',
     cardStyle:{backgroundColor:'#333'}
 
 })
@@ -84,47 +88,17 @@ navigationOptions :{
 
 export default class App extends Component {
 
-  state = {
-      entries: null
-     }
-
-
-  updateEntries = (data) => {
-
-    if (data !== null ){
-      this.setState(()=>({entries:data}))
-      return
-    }
-
-    const update = data === null ? dummy : data
-
-    flashDB.setData(update)
-      .then(() => {
-        this.setState(()=>({entries:update}))
-      })
-
-  }
-
-
   componentDidMount(){
-
-    flashDB.getDecks()
-      .then((result)=>{
-          this.updateEntries(result)
-      })
+    setLocalNotification()
   }
-
-
 
   render() {
 
-    const decks = this.state.entries
-
     return (
 
-      <View style={{flex:1, justifyContent:'flex-start'}}>
+      <View style={{flex:1}}>
         <FlashStatusBar  barStyle='light-content'  />
-        <MainNavi  screenProps={{decks}} />
+        <MainNavi />
       </View>
 
     )
@@ -133,28 +107,4 @@ export default class App extends Component {
 
 
 
-// put dummy data in to the store if empty for testing
-const dummy = {
-  React: {
-    title: 'React',
-    questions: [
-      {
-        question: 'What is React?',
-        answer: 'A library for managing user interfaces'
-      },
-      {
-        question: 'Where do you make Ajax requests in React?',
-        answer: 'The componentDidMount lifecycle event'
-      }
-    ]
-  },
-  JavaScript: {
-    title: 'JavaScript',
-    questions: [
-      {
-        question: 'What is a closure?',
-        answer: 'The combination of a function and the lexical environment within which that function was declared.'
-      }
-    ]
-  }
-}
+
